@@ -1,202 +1,232 @@
 # mo-eval
 
-mo-eval runs reproducible experiments on coding agents. You describe what to compare — which agent,
-which model, which tasks, how many attempts — and it runs every combination in an isolated container,
-grades the result with the task's own tests, and reports what passed.
+You build an agent. People use it and report that it misses things, makes mistakes or costs too much. You change the prompt, tools or model. How do you know the agent improved—and that you did not introduce another regression?
 
-This quickstart compares two clients against two models on one real Django bug: `mo` and Claude Code,
-each on GLM-5.2 and Opus 5, twice each. Four arms, eight attempts.
+Or start with a problem you care about: how well do existing agents solve it, where do they fall short, and what would meaningful progress look like? Define the evaluation, establish a baseline, and measure improvements against it.
 
-Terms used throughout:
+mo-eval is a hosted service for evaluating and improving AI agents. Select representative cases, specify what good behavior means, run configurations under comparable conditions, and inspect quality, cost and latency. Repeat after a change to assess whether it helped. AI can help author cases and checks; those checks still need validation against known good and bad behavior.
 
-- **Client** — the coding agent under test: `mo` (Momento's own) or `cc` (Claude Code).
-- **Task** — one SWE-bench issue, with its own container image and test suite.
-- **Arm** — one client and model combination (the report card calls this a `variant`).
-- **Cell** — one arm, one task, one attempt.
+Start with a supported agent and existing tasks, or bring your own agent and cases. Examples include coding agents, code-review agents, on-call triage agents and anti-piracy investigation agents. They share the same evaluation loop, but each use case has its own specifics, such as its environment, acceptance criteria and relevant metrics.
 
-The commands run in order, each reading what the one before it wrote:
+## Contents
 
-```text
-  new  ──▶  stage  ──▶  plan  ──▶  run  ──▶  report
-   │          │           │         │          │
-   │          │           │         │          └─ turns the finished attempts into a report card, report.md
-   │          │           │         └─ runs each cell in the task's own container, and grades it
-   │          │           └─ freezes the spec into experiment-plan.json, the thing `run` executes
-   │          └─ downloads the agent binaries and task records the spec names
-   └─ writes experiment.yaml: the arms, the tasks, how many attempts
-```
+- [Questions you can investigate](#questions-you-can-investigate)
+- [Getting started](#getting-started)
+  - [Connect to the hosted service](#connect-to-the-hosted-service)
+    - [Codex](#codex)
+    - [Claude Code](#claude-code)
+  - [Run your first evaluation](#run-your-first-evaluation)
+- [How it works](#how-it-works)
+  - [1. Evaluate and improve your agent](#1-evaluate-and-improve-your-agent)
+  - [2. Design your evaluation](#2-design-your-evaluation)
+  - [3. Validate your evaluation](#3-validate-your-evaluation)
+  - [Evaluation components](#evaluation-components)
+- [Bring your own tasks and dataset](#bring-your-own-tasks-and-dataset)
+  - [Define tasks and collect a dataset](#define-tasks-and-collect-a-dataset)
+  - [Author coding cases](#author-coding-cases)
+- [Bring your own agent](#bring-your-own-agent)
+  - [Package the agent and connect its driver](#package-the-agent-and-connect-its-driver)
+  - [Validate task and metric compatibility](#validate-task-and-metric-compatibility)
+  - [Adapt to your use case and company systems](#adapt-to-your-use-case-and-company-systems)
+- [Understand the results](#understand-the-results)
+- [Workflow skills](#workflow-skills)
 
-## 1. Check your machine
+## Questions you can investigate
 
-You need Docker running, and the task images are x86-64. On Apple Silicon that means enabling
-**"Use Rosetta for x86_64/amd64 emulation"** in Docker Desktop → Settings → General: without it every
-attempt runs under far slower emulation, and nothing at run time will tell you it is off. Linux arm64
-cannot run these images at all.
+- Does a change improve the agent on the cases its users care about?
+- Which supported model or agent configuration offers the best quality for the cost?
+- Does the agent fail consistently, or vary across repeated trials?
+- Why did it miss a requirement, stall, time out or spend unexpectedly?
+- Did an improvement on one case introduce regressions elsewhere?
 
-## 2. Install
+A single passing run does not establish reliability. Reproducible evaluation means retaining the task inputs, effective agent configuration, checks and evidence so the result can be inspected and the condition repeated; an agent’s output may still vary between trials.
 
-Everything mo-eval writes — bundles, agent binaries, plans, results, credentials — lives under one
-directory. Make it, put the launcher inside, and put that directory on your PATH:
+## Getting started
 
-```bash
-mkdir -p ~/mo-eval && cd ~/mo-eval
-docker run --rm --platform linux/amd64 public.ecr.aws/r2g5j3j4/mo-eval:latest install \
-  > mo-eval && chmod +x mo-eval
-export PATH="$PWD:$PATH"
-mo-eval --help
-```
+### Connect to the hosted service
 
-Nothing else lands on your machine; the rest runs in the image. You will see it download twice —
-`install` pulls `latest`, then the launcher pins itself to that image's exact version and pulls it by
-number, so a later `latest` cannot change what you are running mid-experiment.
-
-Stay in this directory for the steps below, so that a path means the same thing inside the task
-container as it does here.
-
-Coming back in a new terminal? Run `cd ~/mo-eval && export PATH="$PWD:$PATH"` again.
-
-## 3. Log in
-
-The image carries its own `mo`, and each attempt mints its own gateway token from your login:
-
-```bash
-mo-eval mo login   # once; prints a URL and a code to open on your own machine
-```
-
-## 4. Compose the experiment
-
-```bash
-mo-eval new ./quickstart \
-  --clients mo,cc \
-  --models momento/zai-org/GLM-5.2,anthropic/claude-opus-5 \
-  --tasks django__django-11099 \
-  --size full \
-  --repeats 2
-```
+Use an MCP client that supports HTTP connections and browser-based authentication. The production endpoint is:
 
 ```text
-wrote quickstart/experiment.yaml
-  4 arms, 2 repeat(s), 1 task(s) — 8 attempts
-next:
-  1. mo-eval stage quickstart/experiment.yaml
-  2. mo-eval plan quickstart/experiment.yaml --experiment quickstart/experiment
+https://mcp.evals.gomomento.ai/mcp
 ```
 
-Arms are the cross product of the clients and models you name. Everything else is identical across
-them, which is what makes the comparison fair.
+#### Codex
 
-Agents are not deterministic, so `--repeats 2` runs each arm twice.
-
-`--size` caps how long each attempt may run: `full` allows an hour, `smoke` thirty minutes for a
-quicker, cheaper pass.
-
-The bundle holds `experiment.yaml`, an empty `client/` for the binaries, and the home templates its
-arms start from. Each arm records the agent version it measures, so the same spec stages the same build on
-anyone's machine. The spec is an ordinary file — edit it for anything the flags do not cover.
-
-## 5. Download what the experiment needs
-
-Staging downloads what the spec pins: which `mo` build to measure, which Claude Code release the
-`cc` arms drive, and which SWE-bench issue to solve.
+Run these commands in a terminal:
 
 ```bash
-mo-eval stage ./quickstart/experiment.yaml
+codex mcp add mo-eval --url https://mcp.evals.gomomento.ai/mcp
+codex mcp login mo-eval
 ```
+
+For more setup options, see the [official Codex MCP documentation](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
+
+#### Claude Code
+
+```bash
+claude mcp add --transport http -s user mo-eval https://mcp.evals.gomomento.ai/mcp
+claude mcp login mo-eval
+```
+
+Complete the browser sign-in when prompted. Then ask your assistant:
 
 ```text
-fetching mo 0.131.0
-fetching claude 2.1.238
-fetching 1 task record(s)
-staged mo 0.131.0 (digest verified) → quickstart/client/mo
-staged claude 2.1.238 (digest verified) → quickstart/client/claude
-staged task records → quickstart/instances.jsonl
+Check that mo-eval is connected and tell me what I can do with this account.
+Do not run an evaluation or upload anything yet.
 ```
 
-Both versions are pinned by the spec — yours may differ from these.
+Install the workflow skills from the public [mo-eval repository](https://github.com/momentohq/mo-eval) with your agent. They guide evaluation, task authoring, comparison and analysis; the MCP connection lets the assistant use the hosted service. The assistant checks your access and explains any additional setup needed.
 
-No flags needed: the spec already says what to fetch. Safe to re-run — anything already downloaded and
-matching its digest is left alone.
+### Run your first evaluation
 
-To measure a different build, change that arm's `version:` in the spec. To supply your own,
-replace `version:` with `binary: ./client/mo` and put the executable there — staging then leaves that
-arm alone. `--only client`, `--only tasks` narrow what is fetched; nothing widens past the spec.
-
-## 6. Run
-
-```bash
-mo-eval plan ./quickstart/experiment.yaml --experiment ./quickstart/experiment
-mo-eval run ./quickstart/experiment/experiment-plan.json --concurrency 2
-```
-
-Planning validates the spec and writes the plan file that `run` executes.
-
-The first run pulls the task's container image, about 4 GB, so expect several quiet minutes before the
-agent starts. Progress then renders live in the terminal.
-
-Re-running skips finished cells, so an interrupted run picks up where it stopped.
-
-## 7. Read the results
-
-```bash
-mo-eval report ./quickstart/experiment
-cat ./quickstart/experiment/report-card.txt
-```
-
-The card ends with a head-to-head comparison of every arm:
+Ask your assistant:
 
 ```text
-variant               passes     cost   $/pass  avg time
-mo-glm-5.2               2/2   $0.081   $0.040      1.2m
-mo-claude-opus-5         2/2   $0.327   $0.163      1.0m
-cc-glm-5.2               2/2   $0.186   $0.093      1.1m
-cc-claude-opus-5         2/2   $0.865   $0.433      1.0m
+Use mo-eval-evaluate to help me run a first evaluation. Show me the available
+tasks, supported agents and compatible model routes. Propose one small job
+and show its trial count and execution limits before submitting it.
 ```
 
-Above it, a scoreboard marks each attempt: `█` passed, `▒` the official scorer rejected. Whether an
-agent solves a given task varies between runs.
+The assistant discovers available tasks, supported agents and compatible models. Select a task and compatible configuration, review the request, then authorize the job. Execution consumes model tokens and shared compute.
 
-`report.md` is a fuller written summary, and `cells.json` has one row per cell — eight here —
-including any that failed or never ran.
+The service returns a job ID. Ask your assistant to follow its progress, stop it if needed, or explain the completed results. It can retrieve the summary, detailed measurements and retained evidence for deeper analysis.
 
-## Run a new experiment
+Use `mo-eval-evaluate` to establish a baseline or investigate behavior. Use `mo-eval-compare` to design and interpret a controlled comparison. Hold task inputs and verification fixed while varying the setting you want to evaluate. Several changed settings measure a combined configuration change, not the effect of any one setting. Repeats expose variability; the number and diversity of cases determine how far the conclusion can generalize.
 
-One bundle is one experiment. Compose into a **new** directory each time, and both stay on disk to
-compare:
+## How it works
 
-```bash
-mo-eval new ./kimi-vs-glm \
-  --clients mo \
-  --models momento/zai-org/GLM-5.2,momento/moonshotai/Kimi-K3 \
-  --tasks django__django-11099,django__django-10973,astropy__astropy-12907 \
-  --size smoke \
-  --repeats 3
+### 1. Evaluate and improve your agent
 
-mo-eval stage ./kimi-vs-glm/experiment.yaml
-mo-eval plan  ./kimi-vs-glm/experiment.yaml --experiment ./kimi-vs-glm/experiment
-mo-eval run   ./kimi-vs-glm/experiment/experiment-plan.json --concurrency 2
+```mermaid
+flowchart TB
+    C[Choose tasks and acceptance criteria] --> A[Select agent configurations]
+    A --> R[Run repeated trials]
+    R --> V[Check results against the criteria]
+    V --> P[Review metrics such as quality, cost and latency]
+    P --> I[Inspect failures and improve the agent]
+    I --> A
 ```
 
-Two arms, three tasks, three repeats — eighteen attempts. `new` prints the `stage` and `plan`
-commands for the bundle it just wrote, so you can copy them rather than retype the paths.
+Each trial retains outputs and execution evidence so you can inspect a failure and understand the reported results.
 
-`--models` takes full gateway routes. Each arm is named for its client and the last segment of its
-route — `momento/moonshotai/Kimi-K3` becomes `mo-kimi-k3` — and that name is what labels it in the
-report card and `cells.json`.
+### 2. Design your evaluation
 
-## Extend an existing experiment
+When existing tasks do not cover your problem, build an evaluation around the behavior your users need. Start with real failures and intended outcomes.
 
-To add tasks or arms to a bundle you have already run, edit its `experiment.yaml` — add ids to
-`tasks:`, or another arm — then stage what the edit now needs and plan into a **new** experiment
-directory beside the old one:
-
-```bash
-$EDITOR ./quickstart/experiment.yaml
-mo-eval stage ./quickstart/experiment.yaml                                    # fetch what is new
-mo-eval plan  ./quickstart/experiment.yaml --experiment ./quickstart/round-2  # not ./quickstart/experiment
-mo-eval run   ./quickstart/round-2/experiment-plan.json --concurrency 2
+```mermaid
+flowchart TD
+    A[1. Understand the problem and intended behavior] --> B[2. Define acceptance criteria]
+    B --> C[3. Author tasks: instructions, environments and verifiers]
+    C --> D[4. Assemble the dataset]
+    D --> E[5. Define metrics and required evidence]
 ```
 
-The new directory is a must. A plan is frozen when it is written and holds its own copy
-of everything it ran, so re-planning over the old directory is refused.
+Each task binds its instruction, agent environment and verifier. Tasks can share environment backends or runtime resources while supplying different case data. The dataset collects exact task versions; metrics interpret evidence and assessments over a defined population. Defining metrics may reveal additional evidence requirements or changes needed in the tasks.
 
-Report each directory separately; the earlier results stay exactly as they were.
+### 3. Validate your evaluation
+
+Before using the evaluation to compare agents, validate that it measures the behavior you intended.
+
+```mermaid
+flowchart TD
+    A[1. Prepare known good, bad and ambiguous examples] --> B[2. Run examples through verifiers and metric collection]
+    B --> C[3. Compare assessments and metrics with expected results]
+    C --> D[4. Correct gaps and confirm the checks behave as expected]
+```
+
+Check that verifiers catch the failures you care about, accept valid alternatives and handle uncertainty appropriately. Repeat validation after changes to the evaluation. Observed agent behavior can also expose gaps that need correction. Hold the evaluation fixed when comparing agent configurations so a grading change is not mistaken for an agent improvement.
+
+The evaluation supplies tasks, checks and metrics for the agent-improvement loop above; results from that loop can also inform the next evaluation revision.
+
+### Evaluation components
+
+| Part | What it contributes |
+|---|---|
+| Agent and configuration | The implementation being evaluated, including its host/harness, model and supported settings |
+| Driver | The integration that launches the agent, connects its capabilities and collects outputs |
+| Task and agent environment | The instruction, starting state, available tools/services and interaction rules |
+| Dataset | A collection of exact task versions, with grouping and split metadata |
+| Evidence | Produced artifacts, logs, captured activity, timing and usage where supported |
+| Verifier | Checks the candidate against the task’s acceptance criteria |
+| Metrics and report | Summarize assessed behavior, cost, latency and measurement coverage over the planned cases |
+
+You choose the evaluation question and supported inputs. The service handles hosted scheduling, execution and retained results. For coding tasks, the environment is a workspace with a declared runtime and executable verification. Investigation tasks supply queryable records and services, and produce reports or verdicts for assessment. Trace detail varies by integration; an unavailable measurement is not zero.
+
+A job schedules planned trials. Each trial is an intended run of a task under one configuration; an execution retry is another physical attempt of that trial. Regrading retained evidence creates another assessment, not another independent trial.
+
+## Bring your own tasks and dataset
+
+Use the evaluation-design loop to define a new problem or add coverage for observed failures.
+
+### Define tasks and collect a dataset
+
+A task supplies the instruction, environment and verifier. Reuse an existing task family where its interfaces and acceptance criteria fit. For a new family, supply the domain state/services, output contract and verification needed to assess the agent’s behavior. Select standard metrics or define how additional observations are extracted and aggregated.
+
+### Author coding cases
+
+Authorized task authors can use the `author-task` workflow to create an unlisted draft from an exact Git snapshot. Supply:
+
+- Repository identity and immutable base commit.
+- Instruction and acceptance criteria.
+- Test files and an executable verification command.
+- A known runtime image and any required setup/dependency preparation.
+
+For task authors, a local helper requires Python 3.11+ and Git to prepare source/test artifacts and a draft request. Task packaging, validation and agent execution run in the hosted service, including checking that the unchanged base fails verification. Publication is a separate authorized action. Read `prepare-repository` for supplied runtime and preparation declarations; automatic runtime inference is not provided.
+
+A base-fails check establishes sensitivity to the initial state, not that every possible fix is correct or that the task is solvable. Review the acceptance criteria and use reference or known-good/known-bad controls where available. A catalog listing establishes availability, not a universal task-quality guarantee.
+
+## Bring your own agent
+
+Consider a code-review agent whose users report missed defects and noisy findings. Its evaluation provides changes and repository context, retains findings, and grades them against reviewed defects and benign controls. Reports show precision, recall, cost and latency across agent versions.
+
+The same structure applies to an on-call agent producing an incident report, or an anti-piracy agent producing an evidence-backed verdict. Their environments supply different facts and tools; their verifiers assess different behavior. A safe, justified uncertainty can be the correct result when the available evidence cannot establish a cause or malicious intent.
+
+### Package the agent and connect its driver
+
+Package the agent’s host, prompts, dependencies and default configuration. Bind it to a driver that launches it, connects the task’s capabilities, enforces lifecycle limits and collects its candidate output and evidence. Reuse a supported driver where possible; provide an adapter when the agent’s launch or interaction contract differs.
+
+### Validate task and metric compatibility
+
+Confirm that the driver can connect the required tools, produce the expected candidate output and capture evidence for the selected metrics. Validate those bindings with a scripted or known-output control before running evaluations. If the existing tasks and criteria fit the agent’s purpose, reuse them; onboarding an agent does not require designing another dataset.
+
+### Adapt to your use case and company systems
+
+The required customization depends on what you bring:
+
+| What you bring | What may need adapting |
+|---|---|
+| Supported agent with another compatible model/settings | Configuration |
+| New agent for an existing task family | Package, driver and possibly tool/output/trace bindings |
+| More cases in an existing family | Case data, instructions and reviewed expected behavior |
+| New task family | Environment behavior, candidate contract, verifier and metric policy |
+| Another company’s systems | Service/tool adapters, domain facts, scope and ownership policies |
+
+A new agent needs only a different driver when its capabilities and evidence already match the task contract. New task domains usually require more authoring, but common launch, capture, verification and reporting components should reduce that work.
+
+The service supports reusable drivers and environment integrations, structured checks and calibrated judges, and task-specific metrics. Classification requires reviewed labels, a decision threshold and an abstention policy; diagnosis quality also needs evidence-support and safe-action checks. Custom native log parsing should be reusable across metrics rather than repeated for every report.
+
+Different companies can share execution and measurement machinery while keeping their own tool semantics, runbooks and policies. The onboarding goal is that a second case mostly adds data and reviewed expectations, rather than another runner or reporting implementation.
+
+## Understand the results
+
+For coding tasks, success depends on executable verification and the service’s trial-result policy. Review successful trials together with measurement coverage and how each execution stopped; a verifier pass alone is insufficient to interpret a trial.
+
+Compare quality across comparable case populations. Report planned and measured counts and separate missing evidence, excluded trials and infrastructure/verifier faults from ordinary failures. Small differences on a few cases may not support a ranking.
+
+Cost covers work performed even when it does not produce an eligible quality measurement. Check cost completeness before treating a reported amount as a total. Distinguish agent execution time from queue/preparation time. Read available scorer output, artifacts and traces to diagnose a surprising result before changing the agent.
+
+The improvement loop is deliberate: retain a failure as a case, establish a check that catches it, change the agent, rerun that case and a representative regression set, then decide whether the evidence supports the change. mo-eval supplies evaluation evidence; it does not automatically repair or deploy your agent.
+
+## Workflow skills
+
+Install the public workflow skills with your agent to guide evaluation and task authoring. Evaluation and comparison are distinct workflows: running a baseline does not require designing a head-to-head experiment.
+
+| Workflow | Purpose |
+|---|---|
+| `mo-eval-evaluate` | Run and interpret an evaluation, starting with a small baseline |
+| `mo-eval-compare` | Design, run and interpret a controlled comparison |
+| `author-task` | Create and validate an unlisted coding task draft |
+| `prepare-repository` | Declare a known runtime and dependency preparation |
+
+Your assistant can also retrieve the service’s workflow guides directly. Let it discover available tasks, agents and models rather than copying identifiers from an old example. Installed skills guide the workflow; they do not grant service write authority. Skill releases should remain aligned with the served workflows.
