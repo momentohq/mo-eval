@@ -11,6 +11,8 @@ Start with a supported agent and existing tasks, or bring your own agent and cas
 ## Contents
 
 - [Questions you can investigate](#questions-you-can-investigate)
+  - [Improving an agent](#improving-an-agent)
+  - [Designing the evaluation](#designing-the-evaluation)
 - [Getting started](#getting-started)
   - [Connect to the hosted service](#connect-to-the-hosted-service)
     - [Codex](#codex)
@@ -33,11 +35,21 @@ Start with a supported agent and existing tasks, or bring your own agent and cas
 
 ## Questions you can investigate
 
+### Improving an agent
+
 - Does a change improve the agent on the cases its users care about?
 - Which supported model or agent configuration offers the best quality for the cost?
 - Does the agent fail consistently, or vary across repeated trials?
 - Why did it miss a requirement, stall, time out or spend unexpectedly?
 - Did an improvement on one case introduce regressions elsewhere?
+
+### Designing the evaluation
+
+- How well do existing agents address this problem, and where do they fall short?
+- Which cases represent real user needs and failure modes?
+- Do the criteria and verifiers distinguish good, bad and ambiguous behavior?
+- Which metrics establish a useful baseline and meaningful progress?
+- Does the dataset cover enough variation to support the conclusions you want to draw?
 
 A single passing run does not establish reliability. Reproducible evaluation means retaining the task inputs, effective agent configuration, checks and evidence so the result can be inspected and the condition repeated; an agent’s output may still vary between trials.
 
