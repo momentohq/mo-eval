@@ -4,9 +4,9 @@ You build an agent. People use it and report that it misses things, makes mistak
 
 Or start with a problem you care about: how well do existing agents solve it, where do they fall short, and what would meaningful progress look like? Define the evaluation, establish a baseline, and measure improvements against it.
 
-mo-eval is a hosted service for evaluating and improving AI agents. Select representative cases, specify what good behavior means, run configurations under comparable conditions, and inspect quality, cost and latency. Repeat after a change to assess whether it helped. AI can help author cases and checks; those checks still need validation against known good and bad behavior.
+mo-eval is a hosted service for evaluating and improving AI agents. Select representative tasks, specify what good behavior means, run configurations under comparable conditions, and inspect quality, cost and latency. Repeat after a change to assess whether it helped. AI can help author tasks and checks; those checks still need validation against known good and bad behavior.
 
-Start with a supported agent and existing tasks, or bring your own agent and cases. Examples include coding agents, code-review agents, on-call triage agents and anti-piracy investigation agents. They share the same evaluation loop, but each use case has its own specifics, such as its environment, acceptance criteria and relevant metrics.
+Start with a supported agent and existing tasks, or bring your own agent and tasks. Examples include coding agents, code-review agents, on-call triage agents and anti-piracy investigation agents. They share the same evaluation loop, but each use case has its own specifics, such as its environment, acceptance criteria and relevant metrics.
 
 ## Contents
 
@@ -25,11 +25,11 @@ Start with a supported agent and existing tasks, or bring your own agent and cas
   - [Evaluation components](#evaluation-components)
 - [Bring your own tasks and dataset](#bring-your-own-tasks-and-dataset)
   - [Define tasks and collect a dataset](#define-tasks-and-collect-a-dataset)
-  - [Author coding cases](#author-coding-cases)
+  - [Author coding tasks](#author-coding-tasks)
 - [Bring your own agent](#bring-your-own-agent)
   - [Package the agent and connect its driver](#package-the-agent-and-connect-its-driver)
   - [Validate task and metric compatibility](#validate-task-and-metric-compatibility)
-  - [Adapt to your use case and company systems](#adapt-to-your-use-case-and-company-systems)
+  - [Choose what to customize](#choose-what-to-customize)
 - [Understand the results](#understand-the-results)
 - [Workflow skills](#workflow-skills)
 
@@ -37,16 +37,16 @@ Start with a supported agent and existing tasks, or bring your own agent and cas
 
 ### Improving an agent
 
-- Does a change improve the agent on the cases its users care about?
+- Does a change improve the agent on the tasks its users care about?
 - Which supported model or agent configuration offers the best quality for the cost?
 - Does the agent fail consistently, or vary across repeated trials?
 - Why did it miss a requirement, stall, time out or spend unexpectedly?
-- Did an improvement on one case introduce regressions elsewhere?
+- Did an improvement on one task introduce regressions elsewhere?
 
 ### Designing the evaluation
 
 - How well do existing agents address this problem, and where do they fall short?
-- Which cases represent real user needs and failure modes?
+- Which tasks represent real user needs and failure modes?
 - Do the criteria and verifiers distinguish good, bad and ambiguous behavior?
 - Which metrics establish a useful baseline and meaningful progress?
 - Does the dataset cover enough variation to support the conclusions you want to draw?
@@ -104,7 +104,7 @@ The assistant discovers available tasks, supported agents and compatible models.
 
 The service returns a job ID. Ask your assistant to follow its progress, stop it if needed, or explain the completed results. It can retrieve the summary, detailed measurements and retained evidence for deeper analysis.
 
-Use `mo-eval-evaluate` to establish a baseline or investigate behavior. Use `mo-eval-compare` to design and interpret a controlled comparison. Hold task inputs and verification fixed while varying the setting you want to evaluate. Several changed settings measure a combined configuration change, not the effect of any one setting. Repeats expose variability; the number and diversity of cases determine how far the conclusion can generalize.
+Use `mo-eval-evaluate` to establish a baseline or investigate behavior. Use `mo-eval-compare` to design and interpret a controlled comparison. Hold task inputs and verification fixed while varying the setting you want to evaluate. Several changed settings measure a combined configuration change, not the effect of any one setting. Repeats expose variability; the number and diversity of tasks determine how far the conclusion can generalize.
 
 ## How it works
 
@@ -134,7 +134,7 @@ flowchart TD
     D --> E[5. Define metrics and required evidence]
 ```
 
-Each task binds its instruction, agent environment and verifier. Tasks can share environment backends or runtime resources while supplying different case data. The dataset collects exact task versions; metrics interpret evidence and assessments over a defined population. Defining metrics may reveal additional evidence requirements or changes needed in the tasks.
+Each task binds its instruction, agent environment and verifier. Tasks can share environment backends or runtime resources while supplying different task data. The dataset collects exact task versions; metrics interpret evidence and assessments over a defined population. Defining metrics may reveal additional evidence requirements or changes needed in the tasks.
 
 ### 3. Validate your evaluation
 
@@ -157,11 +157,12 @@ The evaluation supplies tasks, checks and metrics for the agent-improvement loop
 |---|---|
 | Agent and configuration | The implementation being evaluated, including its host/harness, model and supported settings |
 | Driver | The integration that launches the agent, connects its capabilities and collects outputs |
-| Task and agent environment | The instruction, starting state, available tools/services and interaction rules |
+| Task | The instruction and acceptance criteria, bound to an agent environment and verifier |
+| Agent environment | The starting state, available tools/services and interaction rules |
 | Dataset | A collection of exact task versions, with grouping and split metadata |
 | Evidence | Produced artifacts, logs, captured activity, timing and usage where supported |
 | Verifier | Checks the candidate against the task’s acceptance criteria |
-| Metrics and report | Summarize assessed behavior, cost, latency and measurement coverage over the planned cases |
+| Metrics and report | Summarize assessed behavior, cost, latency and measurement coverage over the planned trials |
 
 You choose the evaluation question and supported inputs. The service handles hosted scheduling, execution and retained results. For coding tasks, the environment is a workspace with a declared runtime and executable verification. Investigation tasks supply queryable records and services, and produce reports or verdicts for assessment. Trace detail varies by integration; an unavailable measurement is not zero.
 
@@ -173,9 +174,9 @@ Use the evaluation-design loop to define a new problem or add coverage for obser
 
 ### Define tasks and collect a dataset
 
-A task supplies the instruction, environment and verifier. Reuse an existing task family where its interfaces and acceptance criteria fit. For a new family, supply the domain state/services, output contract and verification needed to assess the agent’s behavior. Select standard metrics or define how additional observations are extracted and aggregated.
+A task binds its instruction and acceptance criteria to an agent environment and verifier. Reuse existing tasks where their interfaces and acceptance criteria fit. When authoring a different kind of task, supply the domain state/services, output contract and verification needed to assess the agent’s behavior. Select standard metrics or define how additional observations are extracted and aggregated.
 
-### Author coding cases
+### Author coding tasks
 
 Authorized task authors can use the `author-task` workflow to create an unlisted draft from an exact Git snapshot. Supply:
 
@@ -202,33 +203,33 @@ Package the agent’s host, prompts, dependencies and default configuration. Bin
 
 Confirm that the driver can connect the required tools, produce the expected candidate output and capture evidence for the selected metrics. Validate those bindings with a scripted or known-output control before running evaluations. If the existing tasks and criteria fit the agent’s purpose, reuse them; onboarding an agent does not require designing another dataset.
 
-### Adapt to your use case and company systems
+### Choose what to customize
 
 The required customization depends on what you bring:
 
 | What you bring | What may need adapting |
 |---|---|
 | Supported agent with another compatible model/settings | Configuration |
-| New agent for an existing task family | Package, driver and possibly tool/output/trace bindings |
-| More cases in an existing family | Case data, instructions and reviewed expected behavior |
-| New task family | Environment behavior, candidate contract, verifier and metric policy |
+| New agent for existing tasks | Package, driver and possibly tool/output/trace bindings |
+| Additional tasks in an existing dataset | Task data, instructions and reviewed expected behavior |
+| New kind of task | Environment behavior, candidate contract, verifier and metric policy |
 | Another company’s systems | Service/tool adapters, domain facts, scope and ownership policies |
 
 A new agent needs only a different driver when its capabilities and evidence already match the task contract. New task domains usually require more authoring, but common launch, capture, verification and reporting components should reduce that work.
 
 The service supports reusable drivers and environment integrations, structured checks and calibrated judges, and task-specific metrics. Classification requires reviewed labels, a decision threshold and an abstention policy; diagnosis quality also needs evidence-support and safe-action checks. Custom native log parsing should be reusable across metrics rather than repeated for every report.
 
-Different companies can share execution and measurement machinery while keeping their own tool semantics, runbooks and policies. The onboarding goal is that a second case mostly adds data and reviewed expectations, rather than another runner or reporting implementation.
+Different companies can share execution and measurement machinery while keeping their own tool semantics, runbooks and policies. The onboarding goal is that an additional task mostly adds data and reviewed expectations, rather than another runner or reporting implementation.
 
 ## Understand the results
 
 For coding tasks, success depends on executable verification and the service’s trial-result policy. Review successful trials together with measurement coverage and how each execution stopped; a verifier pass alone is insufficient to interpret a trial.
 
-Compare quality across comparable case populations. Report planned and measured counts and separate missing evidence, excluded trials and infrastructure/verifier faults from ordinary failures. Small differences on a few cases may not support a ranking.
+Compare quality across comparable task populations. Report planned and measured counts and separate missing evidence, excluded trials and infrastructure/verifier faults from ordinary failures. Small differences on a few tasks may not support a ranking.
 
 Cost covers work performed even when it does not produce an eligible quality measurement. Check cost completeness before treating a reported amount as a total. Distinguish agent execution time from queue/preparation time. Read available scorer output, artifacts and traces to diagnose a surprising result before changing the agent.
 
-The improvement loop is deliberate: retain a failure as a case, establish a check that catches it, change the agent, rerun that case and a representative regression set, then decide whether the evidence supports the change. mo-eval supplies evaluation evidence; it does not automatically repair or deploy your agent.
+The improvement loop is deliberate: turn a reported failure into a task, establish a check that catches it, change the agent, rerun that task and a representative regression set, then decide whether the evidence supports the change. mo-eval supplies evaluation evidence; it does not automatically repair or deploy your agent.
 
 ## Workflow skills
 
