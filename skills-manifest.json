@@ -1,0 +1,50 @@
+{
+  "package_version": "0.1.0",
+  "workflow_version": "v1",
+  "source_repository": "momentohq/mfunc-llm-gw",
+  "source_commit": "8c2c9b36ea34b473bdd21e1163432d61aff111d4",
+  "files": [
+    {
+      "path": "skills/mo-eval-benchmark/SKILL.md",
+      "resource_uri": "skill://mo-eval/v1/mo-eval-benchmark/SKILL.md",
+      "sha256": "d374036984d8a8071f320e677dfdbd86f7ac4470c75eb5e60128c2e9005a4e74",
+      "bytes": 335
+    },
+    {
+      "path": "skills/mo-eval-benchmark/references/workflow.md",
+      "resource_uri": "skill://mo-eval/v1/mo-eval-benchmark/references/workflow.md",
+      "sha256": "bab429469e336270c3c5aa3554281f83979bd451b7cd8c61a291a3f5dada5220",
+      "bytes": 16471
+    },
+    {
+      "path": "skills/mo-eval-author-task/SKILL.md",
+      "resource_uri": "skill://mo-eval/v1/mo-eval-author-task/SKILL.md",
+      "sha256": "41c8b3ef3a9f0b6ed985a8f5c4a567fb3ad5f1dcee0a1ffe27f97c8c2c559143",
+      "bytes": 346
+    },
+    {
+      "path": "skills/mo-eval-author-task/references/workflow.md",
+      "resource_uri": "skill://mo-eval/v1/mo-eval-author-task/references/workflow.md",
+      "sha256": "103116cdd9329c21c56cb2253406125899567cad9c66a2098e1fbecc7c0b109c",
+      "bytes": 3387
+    },
+    {
+      "path": "skills/mo-eval-author-task/scripts/direct_draft.py",
+      "resource_uri": "skill://mo-eval/v1/mo-eval-author-task/scripts/direct_draft.py",
+      "sha256": "ed2c72d03f4d8a56cc92676800bfe16b33c4485bae90df4691eb04650ff9c5f3",
+      "bytes": 24273
+    },
+    {
+      "path": "skills/mo-eval-prepare-repository/SKILL.md",
+      "resource_uri": "skill://mo-eval/v1/mo-eval-prepare-repository/SKILL.md",
+      "sha256": "0be3299e85b63384813c9a0f6fd81374527226ec57b7e58951cdb5b91c365d04",
+      "bytes": 349
+    },
+    {
+      "path": "skills/mo-eval-prepare-repository/references/workflow.md",
+      "resource_uri": "skill://mo-eval/v1/mo-eval-prepare-repository/references/workflow.md",
+      "sha256": "182e47c2bd793714766d2a9d36663555d5198f1945aa48f3d3197a15ff9b4372",
+      "bytes": 1716
+    }
+  ]
+}

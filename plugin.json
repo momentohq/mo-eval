@@ -1,0 +1,13 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "mo-eval",
+  "version": "0.1.0",
+  "description": "Workflows for benchmarking agents and preparing coding tasks with mo-eval.",
+  "author": {
+    "name": "Momento",
+    "url": "https://gomomento.com"
+  },
+  "homepage": "https://github.com/momentohq/mo-eval",
+  "repository": "https://github.com/momentohq/mo-eval",
+  "keywords": ["agent-evaluation", "benchmarking", "mcp"]
+}

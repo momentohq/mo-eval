@@ -1,0 +1,14 @@
+{
+  "name": "mo-eval",
+  "description": "Install mo-eval agent-evaluation workflows.",
+  "owner": {
+    "name": "Momento"
+  },
+  "plugins": [
+    {
+      "name": "mo-eval",
+      "source": "./",
+      "description": "Benchmark agents and prepare coding tasks with the hosted mo-eval service."
+    }
+  ]
+}

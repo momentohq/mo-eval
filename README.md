@@ -17,6 +17,7 @@ The hosted service currently runs supported agents against curated coding tasks,
   - [Connect to the hosted service](#connect-to-the-hosted-service)
     - [Codex](#codex)
     - [Claude Code](#claude-code)
+  - [Install workflow skills](#install-workflow-skills)
   - [Run your first evaluation](#run-your-first-evaluation)
 - [How it works](#how-it-works)
   - [1. Evaluate and improve your agent](#1-evaluate-and-improve-your-agent)
@@ -88,7 +89,40 @@ Check that mo-eval is connected and tell me what I can do with this account.
 Do not run an evaluation or upload anything yet.
 ```
 
-The MCP server currently serves workflow guides through `get_workflow`. Ask your assistant to discover them after connecting. An installable skill package is being prepared for this repository; MCP access does not automatically install skills. The assistant checks your access and explains any additional setup needed.
+The MCP server serves workflow guides through `get_workflow`. Ask your assistant to discover them after connecting. MCP access does not automatically install skills, and installing the skills does not connect or authenticate the MCP server.
+
+### Install workflow skills
+
+This repository packages `mo-eval-benchmark`, `mo-eval-author-task`, and `mo-eval-prepare-repository` as one plugin. The checked-in payload is generated from the served workflows; [`skills-manifest.json`](skills-manifest.json) records its source commit and file hashes. Connect to the hosted MCP service above before using a skill that needs live account data or tools. The plugin contains instructions only; it does not submit a job or add credentials during installation.
+
+For Codex, add this repository as a plugin marketplace and install the plugin:
+
+```bash
+codex plugin marketplace add momentohq/mo-eval
+codex plugin add mo-eval@mo-eval
+```
+
+You can also install it from `/plugins` in Codex. Start a new chat after installation. To refresh the marketplace later, run `codex plugin marketplace upgrade mo-eval`, then refresh the plugin in the Plugins browser. See [Codex plugin packaging and marketplaces](https://developers.openai.com/plugins/build/plugins).
+
+For Claude Code:
+
+```bash
+claude plugin marketplace add momentohq/mo-eval
+claude plugin install mo-eval@mo-eval
+```
+
+Start a new session. The skills are available as `/mo-eval:mo-eval-benchmark`, `/mo-eval:mo-eval-author-task`, and `/mo-eval:mo-eval-prepare-repository`. To receive updates, run `claude plugin marketplace update mo-eval` and `claude plugin update mo-eval@mo-eval`, then start a new session. See [Claude Code marketplace setup](https://code.claude.com/docs/en/plugin-marketplaces).
+
+The skills read packaged reference files when invoked. If Claude asks for permission to read the installed plugin directory, grant it. For non-interactive testing of a local marketplace checkout outside the working directory, pass `--add-dir /absolute/path/to/mo-eval` to `claude`.
+
+To verify the installation without running a paid evaluation, start a session outside any checkout of the service source code and ask:
+
+```text
+Use the mo-eval-benchmark skill. Confirm it is available, check my mo-eval access,
+and discover the available workflows. Do not submit a job or upload anything.
+```
+
+You can remove the plugin in Codex's Plugins browser or with `claude plugin uninstall mo-eval@mo-eval` in Claude Code. Removing the plugin does not remove a separately configured MCP connection.
 
 ### Run your first evaluation
 
@@ -235,13 +269,13 @@ The improvement loop is deliberate: turn a reported failure into a task, establi
 
 ## Workflow skills
 
-The hosted MCP server currently provides these read-only workflow guides through `get_workflow`. The installable skill bundle is not yet published in this repository. Evaluation and comparison are distinct workflows: running a baseline does not require designing a head-to-head experiment.
+The hosted MCP server provides these read-only workflow guides through `get_workflow`. This repository packages the three extended workflows as installable skills; `quickstart` remains a served guide. Evaluation and comparison are distinct workflows: running a baseline does not require designing a head-to-head experiment.
 
-| Workflow | Purpose |
-|---|---|
-| `quickstart` | Run a first authenticated job with one task and one trial |
-| `benchmark` | Design, run and interpret a comparison of curated tasks |
-| `author-task` | Create and validate an unlisted coding task draft |
-| `prepare-repository` | Declare a known runtime and dependency preparation |
+| Served workflow | Installed skill | Purpose |
+|---|---|---|
+| `quickstart` | — | Run a first authenticated job with one task and one trial |
+| `benchmark` | `mo-eval-benchmark` | Design, run and interpret a comparison of curated tasks |
+| `author-task` | `mo-eval-author-task` | Create and validate an unlisted coding task draft |
+| `prepare-repository` | `mo-eval-prepare-repository` | Declare a known runtime and dependency preparation |
 
-Let your assistant discover available tasks, agents and models rather than copying identifiers from an old example. Reading a workflow guide does not grant service write authority. Future installed skills should remain aligned with the served workflows.
+Let your assistant discover available tasks, agents and models rather than copying identifiers from an old example. Reading a workflow guide does not grant service write authority. The installed skills should remain aligned with the served workflows.
