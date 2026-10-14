@@ -6,7 +6,7 @@ Or start with a problem you care about: how well do existing agents solve it, wh
 
 mo-eval is a hosted service for evaluating and improving AI agents. Select representative tasks, specify what good behavior means, run configurations under comparable conditions, and inspect quality, cost and latency. Repeat after a change to assess whether it helped. AI can help author tasks and checks; those checks still need validation against known good and bad behavior.
 
-Start with a supported agent and existing tasks, or bring your own agent and tasks. Examples include coding agents, code-review agents, on-call triage agents and anti-piracy investigation agents. They share the same evaluation loop, but each use case has its own specifics, such as its environment, acceptance criteria and relevant metrics.
+The hosted service currently runs supported agents against curated coding tasks, and authorized task authors can prepare unlisted coding-task drafts. Bringing an arbitrary agent or a non-coding task domain is a design goal, not a generally available service capability. Code-review, on-call triage and anti-piracy investigation are examples of evaluations that would need their own environments, acceptance criteria and metrics.
 
 ## Contents
 
@@ -88,14 +88,14 @@ Check that mo-eval is connected and tell me what I can do with this account.
 Do not run an evaluation or upload anything yet.
 ```
 
-Install the workflow skills from the public [mo-eval repository](https://github.com/momentohq/mo-eval) with your agent. They guide evaluation, task authoring, comparison and analysis; the MCP connection lets the assistant use the hosted service. The assistant checks your access and explains any additional setup needed.
+The MCP server currently serves workflow guides through `get_workflow`. Ask your assistant to discover them after connecting. An installable skill package is being prepared for this repository; MCP access does not automatically install skills. The assistant checks your access and explains any additional setup needed.
 
 ### Run your first evaluation
 
 Ask your assistant:
 
 ```text
-Use mo-eval-evaluate to help me run a first evaluation. Show me the available
+Use mo-eval's quickstart workflow to help me run a first evaluation. Show me the available
 tasks, supported agents and compatible model routes. Propose one small job
 and show its trial count and execution limits before submitting it.
 ```
@@ -104,7 +104,7 @@ The assistant discovers available tasks, supported agents and compatible models.
 
 The service returns a job ID. Ask your assistant to follow its progress, stop it if needed, or explain the completed results. It can retrieve the summary, detailed measurements and retained evidence for deeper analysis.
 
-Use `mo-eval-evaluate` to establish a baseline or investigate behavior. Use `mo-eval-compare` to design and interpret a controlled comparison. Hold task inputs and verification fixed while varying the setting you want to evaluate. Several changed settings measure a combined configuration change, not the effect of any one setting. Repeats expose variability; the number and diversity of tasks determine how far the conclusion can generalize.
+Use the served `quickstart` workflow to establish a baseline and `benchmark` to design and interpret a controlled comparison. Hold task inputs and verification fixed while varying the setting you want to evaluate. Several changed settings measure a combined configuration change, not the effect of any one setting. Repeats expose variability; the number and diversity of tasks determine how far the conclusion can generalize.
 
 ## How it works
 
@@ -164,17 +164,17 @@ The evaluation supplies tasks, checks and metrics for the agent-improvement loop
 | Verifier | Checks the candidate against the task’s acceptance criteria |
 | Metrics and report | Summarize assessed behavior, cost, latency and measurement coverage over the planned trials |
 
-You choose the evaluation question and supported inputs. The service handles hosted scheduling, execution and retained results. For coding tasks, the environment is a workspace with a declared runtime and executable verification. Investigation tasks supply queryable records and services, and produce reports or verdicts for assessment. Trace detail varies by integration; an unavailable measurement is not zero.
+You choose the evaluation question and supported inputs. The service handles hosted scheduling, execution and retained results. For supported coding tasks, the environment is a workspace with a declared runtime and executable verification. Investigation tasks with queryable records, services and report/verdict assessment describe a future extension. Trace detail varies by integration; an unavailable measurement is not zero.
 
 A job schedules planned trials. Each trial is an intended run of a task under one configuration; an execution retry is another physical attempt of that trial. Regrading retained evidence creates another assessment, not another independent trial.
 
 ## Bring your own tasks and dataset
 
-Use the evaluation-design loop to define a new problem or add coverage for observed failures.
+Authorized authors can prepare unlisted coding-task drafts. Dataset-centered curation and new task domains remain design work.
 
 ### Define tasks and collect a dataset
 
-A task binds its instruction and acceptance criteria to an agent environment and verifier. Reuse existing tasks where their interfaces and acceptance criteria fit. When authoring a different kind of task, supply the domain state/services, output contract and verification needed to assess the agent’s behavior. Select standard metrics or define how additional observations are extracted and aggregated.
+A task binds its instruction and acceptance criteria to an agent environment and verifier. Reuse existing tasks where their interfaces and acceptance criteria fit. A future workflow for other task domains would need to supply domain state/services, an output contract and verification suited to the agent’s behavior.
 
 ### Author coding tasks
 
@@ -191,17 +191,19 @@ A base-fails check establishes sensitivity to the initial state, not that every 
 
 ## Bring your own agent
 
+Custom-agent drivers and non-coding examples in this section describe the intended extension path, not a generally available hosted workflow.
+
 Consider a code-review agent whose users report missed defects and noisy findings. Its evaluation provides changes and repository context, retains findings, and grades them against reviewed defects and benign controls. Reports show precision, recall, cost and latency across agent versions.
 
 The same structure applies to an on-call agent producing an incident report, or an anti-piracy agent producing an evidence-backed verdict. Their environments supply different facts and tools; their verifiers assess different behavior. A safe, justified uncertainty can be the correct result when the available evidence cannot establish a cause or malicious intent.
 
 ### Package the agent and connect its driver
 
-Package the agent’s host, prompts, dependencies and default configuration. Bind it to a driver that launches it, connects the task’s capabilities, enforces lifecycle limits and collects its candidate output and evidence. Reuse a supported driver where possible; provide an adapter when the agent’s launch or interaction contract differs.
+An onboarding path would package the agent’s host, prompts, dependencies and default configuration, then bind it to a driver that launches it, connects the task’s capabilities, enforces lifecycle limits and collects its candidate output and evidence. It could reuse a supported driver or provide an adapter for a different launch contract.
 
 ### Validate task and metric compatibility
 
-Confirm that the driver can connect the required tools, produce the expected candidate output and capture evidence for the selected metrics. Validate those bindings with a scripted or known-output control before running evaluations. If the existing tasks and criteria fit the agent’s purpose, reuse them; onboarding an agent does not require designing another dataset.
+That path would need to confirm that the driver can connect the required tools, produce the expected candidate output and capture evidence for the selected metrics. A scripted or known-output control should validate those bindings before evaluation. If existing tasks and criteria fit the agent’s purpose, they can be reused.
 
 ### Choose what to customize
 
@@ -217,7 +219,7 @@ The required customization depends on what you bring:
 
 A new agent needs only a different driver when its capabilities and evidence already match the task contract. New task domains usually require more authoring, but common launch, capture, verification and reporting components should reduce that work.
 
-The service supports reusable drivers and environment integrations, structured checks and calibrated judges, and task-specific metrics. Classification requires reviewed labels, a decision threshold and an abstention policy; diagnosis quality also needs evidence-support and safe-action checks. Custom native log parsing should be reusable across metrics rather than repeated for every report.
+The design calls for reusable drivers and environment integrations, structured checks, calibrated judges and task-specific metrics. Classification would require reviewed labels, a decision threshold and an abstention policy; diagnosis quality would also need evidence-support and safe-action checks. Custom native log parsing should be reusable across metrics rather than repeated for every report.
 
 Different companies can share execution and measurement machinery while keeping their own tool semantics, runbooks and policies. The onboarding goal is that an additional task mostly adds data and reviewed expectations, rather than another runner or reporting implementation.
 
@@ -233,13 +235,13 @@ The improvement loop is deliberate: turn a reported failure into a task, establi
 
 ## Workflow skills
 
-Install the public workflow skills with your agent to guide evaluation and task authoring. Evaluation and comparison are distinct workflows: running a baseline does not require designing a head-to-head experiment.
+The hosted MCP server currently provides these read-only workflow guides through `get_workflow`. The installable skill bundle is not yet published in this repository. Evaluation and comparison are distinct workflows: running a baseline does not require designing a head-to-head experiment.
 
 | Workflow | Purpose |
 |---|---|
-| `mo-eval-evaluate` | Run and interpret an evaluation, starting with a small baseline |
-| `mo-eval-compare` | Design, run and interpret a controlled comparison |
+| `quickstart` | Run a first authenticated job with one task and one trial |
+| `benchmark` | Design, run and interpret a comparison of curated tasks |
 | `author-task` | Create and validate an unlisted coding task draft |
 | `prepare-repository` | Declare a known runtime and dependency preparation |
 
-Your assistant can also retrieve the service’s workflow guides directly. Let it discover available tasks, agents and models rather than copying identifiers from an old example. Installed skills guide the workflow; they do not grant service write authority. Skill releases should remain aligned with the served workflows.
+Let your assistant discover available tasks, agents and models rather than copying identifiers from an old example. Reading a workflow guide does not grant service write authority. Future installed skills should remain aligned with the served workflows.
