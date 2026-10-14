@@ -93,7 +93,7 @@ The MCP server serves workflow guides through `get_workflow`. Ask your assistant
 
 ### Install workflow skills
 
-This repository packages `mo-eval-benchmark`, `mo-eval-author-task`, and `mo-eval-prepare-repository` as one plugin. The checked-in payload is generated from the served workflows; [`skills-manifest.json`](skills-manifest.json) records its source commit and file hashes. Connect to the hosted MCP service above before using a skill that needs live account data or tools. The plugin contains instructions only; it does not submit a job or add credentials during installation.
+This repository packages `mo-eval-benchmark`, `mo-eval-author-task`, and `mo-eval-prepare-repository` as one plugin. The checked-in payload is generated from the served workflows; [`skills-manifest.json`](skills-manifest.json) records its source commit and file hashes. Connect to the hosted MCP service above before using a skill that needs live account data or tools. The plugin contains workflow instructions and a local drafting helper; installation does not submit a job or add credentials.
 
 For Codex, add this repository as a plugin marketplace and install the plugin:
 
