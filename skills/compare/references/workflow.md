@@ -1,104 +1,14 @@
-# Benchmark curated tasks
+# Run a controlled comparison
 
-Use the current task catalog, agent catalog and model routes; do not infer available tasks, agents,
-routes or their compatibility from this guide. A job spends gateway tokens and a shared lane.
-Submit only when the person has authorized this paid job; show the exact request and planned trial
-count if authorization is not yet given. The three server guides below cover a first run,
-comparison design and result analysis.
-Where a guide below says to wait for a go-ahead, authorization already given for that exact job
-counts; do not request it twice.
+Use this workflow when the caller wants to compare two or more configurations. Hold the task inputs
+and verification criteria fixed while the compared arm changes. For a single configuration baseline,
+use `evaluate` instead.
 
-## First run
-
-Walk me through my first mo-eval job. I want a result quickly, so aim for the smallest job that
-works end to end, not one that answers a research question yet.
-
-## 1. Gather what I can choose from
-
-Call `whoami`, `list_agents`, `list_tasks`, and `list_models`, the last with `agent_id` set to `mo`,
-all before telling me anything. If `list_tasks` lists nothing, say there is
-no task I can run yet and stop.
-
-From `whoami`, tell me the address I sign in with — it is what a colleague needs in order to share a
-job with me — and whether this token may submit jobs, which is `may_submit`. Report `may_submit` as
-it comes; do not infer what a token can do from the names of its scopes.
-
-If `may_submit` is false, say so now rather than at step 5: everything below works except submitting,
-and if the token lacks the write scope, getting it means signing in to this server again and
-approving the second permission. If the token has it and `may_submit` is still false, this
-deployment is not admitting my account to submit yet, and signing in again will not change that.
-Nothing else about my account gates what follows, so do not send me back to log in for any other
-reason.
-
-A job pairs a task with an agent and a model route, and each is picked from more on offer. Tell me
-this quickstart uses the `mo` agent, and that I pick the task and the model.
-
-## 2. Show me tasks to choose from
-
-Each task may carry its title, category, size, test count and its suite's language; a task without
-them lists by id alone. For each language the list holds, suggest one or two tasks, favouring:
-
-- size `S`, the smallest source changes, so the agent has least to write;
-- a test count, so the result is graded against named tests.
-
-Show them in one table, a row per task, with whichever of its title, category, size, test count and
-language it has, and let me pick one.
-
-## 3. Show me models to choose from
-
-Pick the model first: show me, in a table, the first one or two routes of each provider in the
-order `list_models` gives them, and say I can ask for the whole list. List them as they are, with no
-remarks on cost or speed. Let me pick one.
-
-## 4. Propose the job
-
-One task and agent pair, one trial, at the `smoke` size: each attempt at the trial capped at
-60 minutes, with its agent stopped at 30 minutes or
-100 turns.
-
-Do not estimate how long the job will take: it waits in a shared queue first, and how long an
-attempt runs depends on the task. State the trial count and the caps, show me the exact `submit_batch_job`
-arguments with one `items` entry whose `task` holds the selected `repo`, `suite_id`, and `task_id`,
-whose `agent.agent_id` is `mo` and `agent.model_route` is my choice, and whose `trial_count` is 1. Wait for my
-go-ahead.
-
-## 5. Submit and follow
-
-On my go-ahead, call `submit_batch_job` and give me the job id. Then tell me, in words close to: "Ask me
-for an update whenever you like, e.g. 'how's the job?'. When it's done, I'll show the summary." Add
-that if my client can repeat a request on a schedule, I can have it ask for me.
-
-Call `get_job_status` only when I ask, and no more than once every few minutes: a job is preparing
-until a lane has prepared it, then running once a lane takes up its trials, and ends done; it ends
-failed, unreadable or incomplete if it cannot be prepared or reported. If it ends that way, read me
-what `get_job_status` says rather than resubmitting.
-
-If I ask to stop my job, call `cancel_job` with its id. Follow `get_job_status` until shutdown is
-acknowledged as cancelled; while cancelling, active cleanup remains pending. Retain its completed
-evidence and original planned trial count when reporting the partial result.
-
-## 6. Show me the result
-
-When it ends done, its `get_job_status` answer may carry a `tldr`, the summary mo-eval wrote for it.
-If it carries none, skip this and do not write a summary of your own. Otherwise:
-
-- `ready`: show me `tldr.saved.tldr.post_text` verbatim, before anything else;
-- `building`: say the summary is on its way, and that `analyze-job` will show it;
-- `unavailable`: give me its `reason` in one line.
-
-Then point me at this server's `analyze-job` prompt with the job id, for what the result does and
-does not support, and at its `design-job` prompt for a real comparison: more tasks, a second arm,
-more trials.
-
-If anything along the way fails or confuses me, offer to tell the mo-eval team with
-`submit_feedback`, and show me what it would send first.
-
-
-## Design a comparison
+## Design and submit the comparison
 
 Help me design and submit a mo-eval job. What I want to find out:
 
-the user's stated benchmark question
+the user's stated comparison question
 
 Design it with me before submitting anything. A job spends real gateway tokens and holds a shared
 lane for as long as it takes, so the cost of a badly-shaped job is hours and money, and it is not
@@ -164,7 +74,7 @@ what it says rather than retrying.
 Then give me the `job_id`, and tell me it is followed with `get_job_status`.
 
 
-## Read a completed comparison
+## Read the completed comparison
 
 Analyse mo-eval job `<job_id returned by submit_experiment_job>` and report what it shows.
 
