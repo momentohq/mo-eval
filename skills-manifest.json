@@ -2,7 +2,7 @@
   "package_version": "0.1.0",
   "workflow_version": "v1",
   "source_repository": "momentohq/mfunc-llm-gw",
-  "source_commit": "6d026e57acd242cb6303ff0495302d1e518a7beb",
+  "source_commit": "f84e44bfc416ecf49fe2fc0aa1b0b42938ab3731",
   "files": [
     {
       "path": "skills/mo-eval-benchmark/SKILL.md",
