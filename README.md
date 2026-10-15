@@ -6,7 +6,7 @@ Or start with a problem you care about: how well do existing agents solve it, wh
 
 mo-eval is a hosted service for evaluating and improving AI agents. Select representative tasks, specify what good behavior means, run configurations under comparable conditions, and inspect quality, cost and latency. Repeat after a change to assess whether it helped. AI can help author tasks and checks; those checks still need validation against known good and bad behavior.
 
-Examples include coding agents, code-review agents, on-call triage agents and anti-piracy investigation agents. They share the same evaluation loop, with their own environments, acceptance criteria and relevant metrics. These are illustrative domains, not announcements of customer deployments.
+Examples include coding agents, code-review agents, on-call triage agents and anti-piracy investigation agents. They share the same evaluation loop, with their own environments, acceptance criteria and relevant metrics.
 
 ## Service status
 
@@ -113,11 +113,13 @@ An illustrative coding evaluation summary (invented numbers, not a measured serv
 
 | Measurement | Example |
 |---|---|
-| Planned / assessed trials | 10 / 10 |
+| Tasks and planned trials | 1 task × 10 trials |
+| Assessed / eligible trials | 10 / 10 |
+| Coverage | 10 of 10 planned trials eligible; 0 missing, invalid or excluded |
 | Passed / failed trials | 7 / 3 |
-| Pass rate | 70% of assessed trials |
-| Observed agent model cost | $1.20 across all 10 attempts; usage captured for each |
-| Median agent execution time | 42 seconds; excludes queue and preparation time |
+| Pass rate | 70% among eligible trials; with one task, also the macro-mean across tasks |
+| Observed agent model cost | $12.00 across all 10 attempts; usage captured for each |
+| Median agent execution time | 180 seconds; excludes queue and preparation time |
 
 Inspect the three failures and retained evidence before deciding what to change.
 
