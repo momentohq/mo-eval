@@ -98,7 +98,7 @@ Ask your assistant to discover the workflow guides after connecting. MCP access 
 
 ### Install workflow skills
 
-This repository packages `mo-eval-benchmark`, `mo-eval-author-task`, and `mo-eval-prepare-repository` as one plugin. The checked-in payload is generated from the served workflows; [`skills-manifest.json`](skills-manifest.json) records its source commit and file hashes. Connect to the hosted MCP service above before using a skill that needs live account data or tools. The plugin contains workflow instructions and a local drafting helper; installation does not submit a job or add credentials.
+This repository packages `evaluate`, `compare`, `author-task`, and `prepare-repository` as one plugin. The checked-in payload is generated from the served workflows; [`skills-manifest.json`](skills-manifest.json) records its source commit and file hashes. Connect to the hosted MCP service above before using a skill that needs live account data or tools. The plugin contains workflow instructions and a local drafting helper; installation does not submit a job or add credentials.
 
 For Codex, add this repository as a plugin marketplace and install the plugin:
 
@@ -116,14 +116,14 @@ claude plugin marketplace add momentohq/mo-eval
 claude plugin install mo-eval@mo-eval
 ```
 
-Start a new session. The skills are available as `/mo-eval:mo-eval-benchmark`, `/mo-eval:mo-eval-author-task`, and `/mo-eval:mo-eval-prepare-repository`. To receive updates, run `claude plugin marketplace update mo-eval` and `claude plugin update mo-eval@mo-eval`, then start a new session. See [Claude Code plugin installation and updates](https://code.claude.com/docs/en/discover-plugins).
+Start a new session. The skills are available as `/mo-eval:evaluate`, `/mo-eval:compare`, `/mo-eval:author-task`, and `/mo-eval:prepare-repository`. To receive updates, run `claude plugin marketplace update mo-eval` and `claude plugin update mo-eval@mo-eval`, then start a new session. See [Claude Code plugin installation and updates](https://code.claude.com/docs/en/discover-plugins).
 
 The skills read packaged reference files when invoked. If Claude asks for permission to read the installed plugin directory, grant it. For non-interactive testing of a local marketplace checkout outside the working directory, pass `--add-dir /absolute/path/to/mo-eval` to `claude`.
 
 To verify the installation without running a paid evaluation, start a session in an empty directory with no other mo-eval skills installed and ask:
 
 ```text
-Use the mo-eval-benchmark skill. Confirm it is available, check my mo-eval access,
+Use the mo-eval:evaluate skill. Confirm it is available, check my mo-eval access,
 and discover the available workflows. Do not submit a job or upload anything.
 ```
 
@@ -157,7 +157,7 @@ An illustrative coding evaluation summary:
 
 Inspect the three failures and retained evidence before deciding what to change.
 
-Use the served `quickstart` workflow to establish a baseline and `benchmark` to design and interpret a controlled comparison. Hold task inputs and verification fixed while varying the setting you want to evaluate. Several changed settings measure a combined configuration change, not the effect of any one setting. Repeats expose variability; the number and diversity of tasks determine how far the conclusion can generalize.
+Use the served `quickstart` workflow to establish a first baseline, `evaluate` to read and iterate on one configuration, and `compare` to design and interpret a controlled comparison. Hold task inputs and verification fixed while varying the setting you want to evaluate. Several changed settings measure a combined configuration change, not the effect of any one setting. Repeats expose variability; the number and diversity of tasks determine how far the conclusion can generalize.
 
 ## How it works
 
@@ -286,13 +286,14 @@ The improvement loop is deliberate: turn a reported failure into a task, establi
 
 ## Workflow skills
 
-The hosted MCP server provides these workflow guides for your assistant to read. This repository packages the three extended workflows as installable skills; `quickstart` remains a served guide. Evaluation and comparison are distinct workflows: running a baseline does not require designing a head-to-head experiment.
+The hosted MCP server provides these workflow guides for your assistant to read. This repository packages the four extended workflows as installable skills; `quickstart` remains a served guide. Evaluation and comparison are distinct workflows: running a baseline does not require designing a head-to-head experiment.
 
 | Served workflow | Installed skill | Purpose |
 |---|---|---|
 | `quickstart` | — | Run a first authenticated job with one task and one trial |
-| `benchmark` | `mo-eval-benchmark` | Design, run and interpret a comparison of curated tasks |
-| `author-task` | `mo-eval-author-task` | Create and validate an unlisted coding task draft |
-| `prepare-repository` | `mo-eval-prepare-repository` | Declare a known runtime and dependency preparation |
+| `evaluate` | `evaluate` | Run, read and iterate on a baseline for one configuration |
+| `compare` | `compare` | Design, run and interpret a controlled comparison |
+| `author-task` | `author-task` | Create and validate an unlisted coding task draft |
+| `prepare-repository` | `prepare-repository` | Declare a known runtime and dependency preparation |
 
 Let your assistant discover available tasks, agents and models rather than copying identifiers from an old example. Reading a workflow guide does not grant service write authority. Use the workflow names your assistant discovers from the service.

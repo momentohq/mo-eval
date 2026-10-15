@@ -1,48 +1,60 @@
 {
-  "package_version": "0.1.0",
+  "package_version": "0.2.0",
   "workflow_version": "v1",
   "source_repository": "momentohq/mfunc-llm-gw",
-  "source_commit": "f84e44bfc416ecf49fe2fc0aa1b0b42938ab3731",
+  "source_commit": "958ab150dea24b6ea4638fb54f2a24ea8be76dce",
   "files": [
     {
-      "path": "skills/mo-eval-benchmark/SKILL.md",
-      "resource_uri": "skill://mo-eval/v1/mo-eval-benchmark/SKILL.md",
-      "sha256": "d374036984d8a8071f320e677dfdbd86f7ac4470c75eb5e60128c2e9005a4e74",
-      "bytes": 335
+      "path": "skills/evaluate/SKILL.md",
+      "resource_uri": "skill://mo-eval/v1/evaluate/SKILL.md",
+      "sha256": "e7c16413691f3fcb7541d3c0af9de05123b5e9564a8a8e37911e2117286264e2",
+      "bytes": 371
     },
     {
-      "path": "skills/mo-eval-benchmark/references/workflow.md",
-      "resource_uri": "skill://mo-eval/v1/mo-eval-benchmark/references/workflow.md",
-      "sha256": "bab429469e336270c3c5aa3554281f83979bd451b7cd8c61a291a3f5dada5220",
-      "bytes": 16471
+      "path": "skills/evaluate/references/workflow.md",
+      "resource_uri": "skill://mo-eval/v1/evaluate/references/workflow.md",
+      "sha256": "f9f12678d4106a5ca329a66b26be1da821dc56fd2076664426c7523cf420439a",
+      "bytes": 8996
     },
     {
-      "path": "skills/mo-eval-author-task/SKILL.md",
-      "resource_uri": "skill://mo-eval/v1/mo-eval-author-task/SKILL.md",
-      "sha256": "41c8b3ef3a9f0b6ed985a8f5c4a567fb3ad5f1dcee0a1ffe27f97c8c2c559143",
-      "bytes": 346
+      "path": "skills/compare/SKILL.md",
+      "resource_uri": "skill://mo-eval/v1/compare/SKILL.md",
+      "sha256": "f8051874dbd75d5b8c64c3bda6f28cb7047fb2499bba9218ac920231b7586459",
+      "bytes": 358
     },
     {
-      "path": "skills/mo-eval-author-task/references/workflow.md",
-      "resource_uri": "skill://mo-eval/v1/mo-eval-author-task/references/workflow.md",
+      "path": "skills/compare/references/workflow.md",
+      "resource_uri": "skill://mo-eval/v1/compare/references/workflow.md",
+      "sha256": "5eb3e6354da10db0dbdc6ca87d3c5ec9a348c1f17f8ab45d726dab6343b78644",
+      "bytes": 11827
+    },
+    {
+      "path": "skills/author-task/SKILL.md",
+      "resource_uri": "skill://mo-eval/v1/author-task/SKILL.md",
+      "sha256": "7eab3f4b4e31454e92e3a25d0687d225e183171df25708b50f514a2881018593",
+      "bytes": 338
+    },
+    {
+      "path": "skills/author-task/references/workflow.md",
+      "resource_uri": "skill://mo-eval/v1/author-task/references/workflow.md",
       "sha256": "103116cdd9329c21c56cb2253406125899567cad9c66a2098e1fbecc7c0b109c",
       "bytes": 3387
     },
     {
-      "path": "skills/mo-eval-author-task/scripts/direct_draft.py",
-      "resource_uri": "skill://mo-eval/v1/mo-eval-author-task/scripts/direct_draft.py",
+      "path": "skills/author-task/scripts/direct_draft.py",
+      "resource_uri": "skill://mo-eval/v1/author-task/scripts/direct_draft.py",
       "sha256": "ed2c72d03f4d8a56cc92676800bfe16b33c4485bae90df4691eb04650ff9c5f3",
       "bytes": 24273
     },
     {
-      "path": "skills/mo-eval-prepare-repository/SKILL.md",
-      "resource_uri": "skill://mo-eval/v1/mo-eval-prepare-repository/SKILL.md",
-      "sha256": "0be3299e85b63384813c9a0f6fd81374527226ec57b7e58951cdb5b91c365d04",
-      "bytes": 349
+      "path": "skills/prepare-repository/SKILL.md",
+      "resource_uri": "skill://mo-eval/v1/prepare-repository/SKILL.md",
+      "sha256": "15ca3e772f9b30dd2c0da81140a5fe5dec438dd0a66a5e1973f65d0c99cf9373",
+      "bytes": 341
     },
     {
-      "path": "skills/mo-eval-prepare-repository/references/workflow.md",
-      "resource_uri": "skill://mo-eval/v1/mo-eval-prepare-repository/references/workflow.md",
+      "path": "skills/prepare-repository/references/workflow.md",
+      "resource_uri": "skill://mo-eval/v1/prepare-repository/references/workflow.md",
       "sha256": "182e47c2bd793714766d2a9d36663555d5198f1945aa48f3d3197a15ff9b4372",
       "bytes": 1716
     }

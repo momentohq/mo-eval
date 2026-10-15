@@ -10,13 +10,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_FILES = {
-    "skills/mo-eval-benchmark/SKILL.md",
-    "skills/mo-eval-benchmark/references/workflow.md",
-    "skills/mo-eval-author-task/SKILL.md",
-    "skills/mo-eval-author-task/references/workflow.md",
-    "skills/mo-eval-author-task/scripts/direct_draft.py",
-    "skills/mo-eval-prepare-repository/SKILL.md",
-    "skills/mo-eval-prepare-repository/references/workflow.md",
+    "skills/evaluate/SKILL.md",
+    "skills/evaluate/references/workflow.md",
+    "skills/compare/SKILL.md",
+    "skills/compare/references/workflow.md",
+    "skills/author-task/SKILL.md",
+    "skills/author-task/references/workflow.md",
+    "skills/author-task/scripts/direct_draft.py",
+    "skills/prepare-repository/SKILL.md",
+    "skills/prepare-repository/references/workflow.md",
 }
 
 
