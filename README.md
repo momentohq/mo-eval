@@ -75,7 +75,7 @@ Run these commands in a terminal:
 
 ```bash
 codex mcp add mo-eval --url https://mcp.evals.gomomento.ai/mcp
-codex mcp login mo-eval
+codex mcp login mo-eval --scopes evals:read,evals:write
 ```
 
 For more setup options, see the [official Codex MCP documentation](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
