@@ -32,6 +32,7 @@ The hosted service currently runs supported agents against curated coding tasks,
   - [Choose what to customize](#choose-what-to-customize)
 - [Understand the results](#understand-the-results)
 - [Workflow skills](#workflow-skills)
+- [Design and onboarding pilots](#design-and-onboarding-pilots)
 
 ## Questions you can investigate
 
@@ -245,3 +246,7 @@ The hosted MCP server currently provides these read-only workflow guides through
 | `prepare-repository` | Declare a known runtime and dependency preparation |
 
 Let your assistant discover available tasks, agents and models rather than copying identifiers from an old example. Reading a workflow guide does not grant service write authority. Future installed skills should remain aligned with the served workflows.
+
+## Design and onboarding pilots
+
+For collaboration on general-purpose evaluations, start with the [service design](docs/service-design.md) and [onboarding pilot worksheet](docs/onboarding-pilots.md). They describe the target contracts, implementation gaps and first on-call and anti-piracy tasks to work through.
