@@ -4,6 +4,9 @@ Use this workflow when the caller wants to compare two or more configurations. H
 and verification criteria fixed while the compared arm changes. For a single configuration baseline,
 use `evaluate` instead.
 
+Where this guide says to wait for a go-ahead, authorization already given for that exact job counts;
+do not request it twice.
+
 ## Design and submit the comparison
 
 Help me design and submit a mo-eval job. What I want to find out:

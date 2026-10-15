@@ -2,7 +2,7 @@
   "package_version": "0.2.0",
   "workflow_version": "v1",
   "source_repository": "momentohq/mfunc-llm-gw",
-  "source_commit": "6e320191b4eba2f647323f81936df2b38da523dd",
+  "source_commit": "958ab150dea24b6ea4638fb54f2a24ea8be76dce",
   "files": [
     {
       "path": "skills/evaluate/SKILL.md",
@@ -13,8 +13,8 @@
     {
       "path": "skills/evaluate/references/workflow.md",
       "resource_uri": "skill://mo-eval/v1/evaluate/references/workflow.md",
-      "sha256": "6d1bd8614a103bf7f5146a6ab96a9b6543c2aab2f43b05df1a59de01f1e2b60d",
-      "bytes": 8893
+      "sha256": "f9f12678d4106a5ca329a66b26be1da821dc56fd2076664426c7523cf420439a",
+      "bytes": 8996
     },
     {
       "path": "skills/compare/SKILL.md",
@@ -25,8 +25,8 @@
     {
       "path": "skills/compare/references/workflow.md",
       "resource_uri": "skill://mo-eval/v1/compare/references/workflow.md",
-      "sha256": "0d553526e5db12cc606ab58f687bdf385a6a50701d778f60c653144f9b63448a",
-      "bytes": 11700
+      "sha256": "5eb3e6354da10db0dbdc6ca87d3c5ec9a348c1f17f8ab45d726dab6343b78644",
+      "bytes": 11827
     },
     {
       "path": "skills/author-task/SKILL.md",

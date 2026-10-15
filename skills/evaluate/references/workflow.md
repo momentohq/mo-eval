@@ -9,13 +9,14 @@ covers account status, choosing a small task and model, and confirming the initi
 ## Run or repeat a baseline
 
 Call `list_agents`, `list_tasks`, and `list_models` for the current choices; do not infer an agent,
-task, or model route from this guide. Propose a `submit_batch_job` request with one item and one
-agent configuration. Keep that configuration fixed across the baseline's trials. Show the exact
-request, trial count, and spending limits, then wait for the caller's authorization before submitting.
+task, or model route from this guide. Propose a `submit_batch_job` request with one or more task
+items that all use one agent configuration. Set each item's `trial_count` explicitly, and keep that
+configuration fixed across every item and trial. Show the exact request, per-item trial counts, and
+spending limits, then wait for the caller's authorization before submitting.
 
-To repeat a baseline, use the same task and configuration with `submit_batch_job`. If the caller
-changes the configuration, make the changed run a new baseline rather than treating it as a
-comparison.
+To repeat a baseline, use the same tasks, configuration, and per-item trial counts with
+`submit_batch_job`. If the caller changes the configuration, make the changed run a new baseline
+rather than treating it as a comparison.
 
 ## Read and iterate on the baseline
 
