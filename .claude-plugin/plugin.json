@@ -1,0 +1,8 @@
+{
+  "name": "mo-eval",
+  "version": "0.1.0",
+  "description": "Workflows for benchmarking agents and preparing coding tasks with mo-eval.",
+  "author": {
+    "name": "Momento"
+  }
+}
