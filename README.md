@@ -10,7 +10,7 @@ Examples include coding agents, code-review agents, on-call triage agents and an
 
 ## Service status
 
-This README describes the target service experience. Available hosted workflows cover supported coding agents, curated coding tasks and authorized coding-task drafts. Arbitrary agent drivers, non-coding task onboarding and dataset-centered curation are target capabilities. Workflow guides are served over MCP; installable skill distribution is tracked separately. Ask your assistant to discover the capabilities available to your account.
+This README describes the target service experience. Available hosted workflows cover supported coding agents, curated coding tasks and authorized coding-task drafts. Ask your assistant to discover the capabilities available to your account.
 
 ## Contents
 
@@ -109,7 +109,7 @@ The assistant discovers available tasks, supported agents and compatible models.
 
 The service returns a job ID. Ask your assistant to follow its progress, stop it if needed, or explain the completed results. It can retrieve the summary, detailed measurements and retained evidence for deeper analysis.
 
-An illustrative coding evaluation summary (invented numbers, not a measured service result):
+An illustrative coding evaluation summary:
 
 | Measurement | Example |
 |---|---|
