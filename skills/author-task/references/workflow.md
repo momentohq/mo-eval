@@ -3,7 +3,7 @@
 This workflow creates an **unlisted draft** for an operator. It does not publish the task. Read
 `get_workflow` with `name: "author-task", asset: "direct_draft.py"` to obtain the versioned public
 packaging helper; the same bytes are available at the asset resource URI in the workflow index.
-The helper needs Python 3.11+ and Git, not a service checkout, Poetry environment or gateway key.
+The helper needs Python 3.11+ and Git 2.31+, not a service checkout, Poetry environment or gateway key.
 Inspect its `--help` and the generated request before sending anything.
 
 1. Call `whoami`. `is_operator` describes account authority; `may_submit` also needs to be true for
@@ -19,6 +19,9 @@ Inspect its `--help` and the generated request before sending anything.
    `--setup-command '<command>'`. Supply `--prepare-command '<command>'` and repeat
    `--prepare-artifact <root>` only for a known dependency preparation. The helper writes
    `direct-draft.json`, `source.bundle` and `tests.tar` under the output directory.
+   `source.bundle` contains all Git history reachable from the chosen base, including deleted files.
+   Review that history for secrets before upload. This direct-draft protocol has no narrower packaging
+   option: its self-contained bundle is the source artifact the lane validates.
 3. Verify the base is a full commit ID and review the JSON request and each file's byte count and
    SHA-256. The helper packages artifacts; the lane decides whether the task is valid and whether
    the unchanged base fails the verifier. The direct request format remains an implementation

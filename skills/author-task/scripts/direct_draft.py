@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build upload artifacts and `create_draft.direct` arguments from a local base and test tree.
 
-Requires Python 3.11+ and Git. It uses no mo-eval installation, Docker, network or gateway key.
+Requires Python 3.11+ and Git 2.31+. It uses no mo-eval installation, Docker, network or gateway key.
 The output is an inspectable request and two local files; it does not submit or upload them.
 The server and contained lane remain authoritative for the task's semantics and base failure.
 
@@ -15,6 +15,10 @@ The `--image` flag is needed when the base commits no `.mo-eval/config.toml`. Ou
 `tests.tar`, `source.bundle` and `direct-draft.json`, written in that order. The request is written
 last and is absent after a refusal. This versioned helper follows the server's provisional direct
 carrier; use the helper from the same workflow version as the connected server.
+
+`source.bundle` contains all Git history reachable from the chosen base, including deleted files.
+Review that history for secrets before upload. This direct-draft protocol has no narrower packaging
+option: its self-contained bundle is the source artifact the lane validates.
 """
 
 from __future__ import annotations

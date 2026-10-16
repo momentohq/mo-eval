@@ -9,29 +9,29 @@ do not request it twice.
 
 ## Design and submit the comparison
 
-Help me design and submit a mo-eval job. What I want to find out:
+Help the person design and submit a mo-eval job. Their question:
 
 the user's stated comparison question
 
-Design it with me before submitting anything. A job spends real gateway tokens and holds a shared
+Design it with the person before submitting anything. A job spends real gateway tokens and holds a shared
 lane for as long as it takes, so the cost of a badly-shaped job is hours and money, and it is not
 refunded by noticing afterwards.
 
 ## Work out what would answer the question
 
-Say back what the job has to show to settle it, and what result would change my mind. If the goal
+Say back what the job has to show to settle it, and what result would change the person's mind. If the goal
 names a comparison, name the one variable that differs between the arms; if it names more than one,
 the job cannot attribute a difference to either and the design needs fixing now rather than at
 analysis.
 
-If the question cannot be answered by a job of this shape — it needs a benchmark we do not have, or
+If the question cannot be answered by a job of this shape — it needs a task set absent from the catalog, or
 evidence a trial does not capture — say so instead of designing around it.
 
 ## Pick the pieces
 
-Call `whoami` first, for `may_submit`: a design I cannot submit is worth knowing about before we
-shape it rather than after. An empty `list_tasks` means the catalog holds nothing I can run, not
-that my account is missing something.
+Call `whoami` first, for `may_submit`: a design the person cannot submit is worth knowing about
+before shaping it rather than after. An empty `list_tasks` means the catalog holds nothing the
+person can run, not that their account is missing something.
 
 Then use `list_tasks` for the repository and suite; only what it lists can be run, and the ids are
 case-sensitive exactly as it gives them. Each task may carry its title, category, size, test count
@@ -43,7 +43,7 @@ results are graded against named tests. Say which tasks you picked and why.
   *and* route measure neither. Give every arm a `name` when more than one shares an agent, route and
   effort, since results are labelled by it.
 - **Agents and routes.** Call `list_agents` before choosing an agent. Pick the model first, since it
-  is usually what a job compares: offer me routes from `list_models`, then take each arm's agent
+  is usually what a job compares: offer the person routes from `list_models`, then take each arm's agent
   selector from that route's `compatible_agent_ids`. The field contains `list_agents` `agent_id`
   values. When the agent is what differs, offer only routes whose `compatible_agent_ids` hold every
   selected agent.
@@ -61,7 +61,7 @@ results are graded against named tests. Say which tasks you picked and why.
 ## Cost it before submitting
 
 Multiply: **arms × tasks × trials of each = trials**, each one an agent working for up to its size's
-cap. State that number and a rough token cost, and stop for my confirmation before calling
+cap. State that number and a rough token cost, and stop for the person's confirmation before calling
 `submit_experiment_job`.
 
 If the count is large, propose the smaller job that would answer the same question — a few
@@ -70,11 +70,11 @@ for is worse than one that was too small.
 
 ## Submit and follow
 
-Call `submit_experiment_job` only once I have agreed the shape. It refuses a malformed setting before anything
+Call `submit_experiment_job` only once the person has agreed the shape. It refuses a malformed setting before anything
 is queued; a setting only the lane can refuse fails the whole job before any agent starts, so read
 what it says rather than retrying.
 
-Then give me the `job_id`, and tell me it is followed with `get_job_status`.
+Then give the person the `job_id`, and tell them it is followed with `get_job_status`.
 
 
 ## Read the completed comparison
